@@ -5,7 +5,7 @@ document.getElementById('aspiration-form').addEventListener('submit', function(e
   const email = document.getElementById('email').value;
   const aspiration = document.getElementById('aspiration').value;
   const confirmation = document.getElementById('confirmation');
-  const errorElement = document.getElementById('error'); // Tambahkan elemen error
+  const errorElement = document.getElementById('error');
 
   console.log('Mengirim data:', { name, email, aspiration });
 

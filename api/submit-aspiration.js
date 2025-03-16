@@ -1,43 +1,41 @@
-document.getElementById('aspiration-form').addEventListener('submit', function(e) {
-  e.preventDefault();
+// api/submit-aspiration.js
+const fs = require('fs');
+const path = require('path');
 
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const aspiration = document.getElementById('aspiration').value;
-  const confirmation = document.getElementById('confirmation');
+export default function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-  console.log('Mengirim data:', { name, email, aspiration });
+  const { name, email, aspiration } = req.body;
 
-  fetch('/submit-aspiration', { // Gunakan URL relatif
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      name: name,
-      email: email,
-      aspiration: aspiration
-    })
-  })
-  .then(response => {
-    if (!response.ok) {
-      return response.json().then(err => {
-        throw new Error(err.error || `HTTP error! status: ${response.status}`);
-      });
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log('Response:', data);
-    if (data.message) {
-      this.reset();
-      confirmation.classList.remove('hidden');
-    } else {
-      throw new Error(data.error || 'Gagal mengirim aspirasi');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('Terjadi kesalahan, silakan coba lagi: ' + error.message);
-  });
-});
+  console.log('Data diterima:', { name, email, aspiration });
+
+  if (!aspiration) {
+    return res.status(400).json({ error: 'Aspirasi wajib diisi' });
+  }
+
+  const dataDir = path.join('/tmp', 'data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+
+  const dataFilePath = path.join(dataDir, 'aspirations.json');
+  const newAspiration = {
+    name: name || 'Anonim',
+    email: email || 'Tidak ada',
+    aspiration: aspiration,
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    const aspirations = fs.existsSync(dataFilePath) ? JSON.parse(fs.readFileSync(dataFilePath)) : [];
+    aspirations.push(newAspiration);
+    fs.writeFileSync(dataFilePath, JSON.stringify(aspirations, null, 2));
+    console.log('Data disimpan ke:', dataFilePath, 'Isi:', newAspiration);
+    res.status(200).json({ message: 'Aspirasi berhasil disimpan!' });
+  } catch (error) {
+    console.error('Error menyimpan data:', error.message, 'Stack:', error.stack);
+    res.status(500).json({ error: 'Gagal menyimpan aspirasi: ' + error.message });
+  }
+}
