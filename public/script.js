@@ -9,7 +9,7 @@ document.getElementById('aspiration-form').addEventListener('submit', function(e
 
   console.log('Mengirim data:', { name, email, aspiration });
 
-  fetch('/submit-aspiration', {
+  fetch('https://sedoso-form-api.vercel.app/submit-aspiration', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
