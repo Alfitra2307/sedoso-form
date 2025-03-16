@@ -13,19 +13,20 @@
     <form id="aspiration-form">
       <div class="form-group">
         <label for="name">Nama Anggota (WAJIB):</label>
-        <input type="text" id="name" placeholder="Masukkan nama Anda">
+        <input type="text" id="name" pattern="[A-Za-z\s]+" title="Nama hanya boleh berisi huruf dan spasi" placeholder="Masukkan nama Anda" required>
       </div>
       <div class="form-group">
         <label for="email">Email Anggota (opsional):</label>
         <input type="email" id="email" placeholder="Masukkan email Anda">
       </div>
       <div class="form-group">
-        <label for="aspiration">Aspirasi Anda(WAJIB):</label>
-        <textarea id="aspiration" rows="5" placeholder="Tulis aspirasi Anda di sini..." required></textarea>
+        <label for="aspiration">Aspirasi Anda (WAJIB):</label>
+        <textarea id="aspiration" rows="5" placeholder="Tulis aspirasi Anda di sini (minimal 10 kata)..." required minlength="10"></textarea>
       </div>
       <button type="submit">Kirim Aspirasi</button>
     </form>
     <div id="confirmation" class="hidden">Terima kasih! Aspirasi Anda telah dikirim.</div>
+    <div id="error" class="hidden"></div>
   </div>
   <script src="script.js"></script>
 </body>

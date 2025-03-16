@@ -6,12 +6,17 @@ const app = express();
 const port = 3000;
 
 // Middleware
-app.use(bodyParser.json()); // Untuk parsing JSON
-app.use(bodyParser.urlencoded({ extended: true })); // Untuk parsing form data
-app.use(express.static(path.join(__dirname, 'public'))); // Serve file statis dari folder public
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Path untuk file penyimpanan
-const dataFilePath = path.join(__dirname, 'data', 'aspirations.json');
+// Pastikan folder 'data' ada
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir);
+}
+
+const dataFilePath = path.join(dataDir, 'aspirations.json');
 
 // Membaca data dari file
 const readData = () => {
@@ -42,9 +47,12 @@ app.post('/submit-aspiration', (req, res) => {
   console.log('Menerima data:', req.body);
   const { name, email, aspiration } = req.body;
 
-  // Validasi
-  if (!aspiration) {
-    return res.status(400).json({ error: 'Aspirasi wajib diisi' });
+  // Validasi server-side
+  if (!name || !name.match(/^[A-Za-z\s]+$/)) {
+    return res.status(400).json({ error: 'Nama hanya boleh berisi huruf dan spasi.' });
+  }
+  if (!aspiration || aspiration.split(/\s+/).filter(word => word.length > 0).length < 10) {
+    return res.status(400).json({ error: 'Aspirasi harus minimal 10 kata.' });
   }
 
   const newAspiration = {
