@@ -3,18 +3,12 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 // Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public'), {
-  setHeaders: (res, path) => {
-    if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
-    }
-  }
-}));
+app.use(bodyParser.json()); // Untuk parsing JSON
+app.use(bodyParser.urlencoded({ extended: true })); // Untuk parsing form data
+app.use(express.static(path.join(__dirname, 'public'))); // Serve file statis dari folder public
 
 // Path untuk file penyimpanan
 const dataFilePath = path.join(__dirname, 'data', 'aspirations.json');
@@ -48,6 +42,7 @@ app.post('/submit-aspiration', (req, res) => {
   console.log('Menerima data:', req.body);
   const { name, email, aspiration } = req.body;
 
+  // Validasi
   if (!aspiration) {
     return res.status(400).json({ error: 'Aspirasi wajib diisi' });
   }
@@ -71,6 +66,7 @@ app.post('/submit-aspiration', (req, res) => {
   }
 });
 
+// Jalankan server
 app.listen(port, () => {
-  console.log(`Server berjalan di port ${port}`);
+  console.log(`Server berjalan di http://localhost:${port}`);
 });
